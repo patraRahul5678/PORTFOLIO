@@ -410,10 +410,14 @@
   }
 
   @media (max-width:520px){
-    .stage-controls{ gap:10px; }
+    .stage{ align-items:center; }
+    .stage-header{ justify-content:center; flex-direction:column; align-items:center; text-align:center; }
+    .stage-controls{ gap:10px; justify-content:center; }
     .progress-count{ display:none; }
     .rank-labels{ display:none; }
-    .hint-text{ margin-top:22px; }
+    .board-scene{ align-items:center; }
+    .file-labels{ margin-left:auto; margin-right:auto; }
+    .hint-text{ margin-top:22px; text-align:center; }
   }
   @media (prefers-reduced-motion:reduce){
     *{ animation:none !important; transition:none !important; }
