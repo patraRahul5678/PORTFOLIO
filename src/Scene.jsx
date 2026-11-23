@@ -107,10 +107,10 @@ const M4 = (x, y, z, sx, sy, sz, ry = 0) => new THREE.Matrix4().compose(new THRE
 
 function pillTex(name, idx, on) {
   const c = document.createElement('canvas'); c.width = 440; c.height = 116; const g = c.getContext('2d')
-  g.fillStyle = on ? '#ff5a1f' : '#3a2e46'; g.strokeStyle = 'rgba(255,255,255,.3)'; g.lineWidth = 3
+  g.fillStyle = on ? '#ff7a45' : 'rgba(255,252,249,.96)'; g.strokeStyle = on ? 'rgba(255,255,255,.9)' : 'rgba(110,80,150,.28)'; g.lineWidth = 3
   g.beginPath(); g.roundRect(6, 8, 428, 92, 30); g.fill(); g.stroke()
-  g.fillStyle = 'rgba(255,255,255,.2)'; g.beginPath(); g.arc(60, 54, 32, 0, 6.3); g.fill()
-  g.fillStyle = '#fff'; g.textBaseline = 'middle'; g.textAlign = 'center'; g.font = '800 30px Archivo, system-ui, sans-serif'; g.fillText('0' + idx, 60, 55)
+  g.fillStyle = on ? 'rgba(255,255,255,.28)' : 'rgba(110,80,150,.13)'; g.beginPath(); g.arc(60, 54, 32, 0, 6.3); g.fill()
+  g.fillStyle = on ? '#fff' : '#3a2a44'; g.textBaseline = 'middle'; g.textAlign = 'center'; g.font = '800 30px Archivo, system-ui, sans-serif'; g.fillText('0' + idx, 60, 55)
   g.textAlign = 'left'; g.font = '800 46px Archivo, system-ui, sans-serif'; g.fillText(name, 110, 56)
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t
 }
