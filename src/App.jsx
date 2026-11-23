@@ -237,12 +237,61 @@ export default function App() {
         ))}
       </section>
 
-      <section className="sec or" id="projects">
+        <section className="sec or" id="projects">
         <p className="lab up">(04) Projects</p><h2>Selected <em>work</em></h2>
-        {P.map((p, k) => (
-          <div className="pr" key={p[0]}><span className="n up">0{k + 1}</span><h3>{p[0]}</h3><p>{p[1]}<small className="up">{p[2]}</small><small className="buttom" onClick={() => window.open(p[4], '_blank')}><span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{<FaGithub />}GitHub</span></small></p><span className="ar2" onClick={() => window.open(p[3], '_blank')}>↗</span>
-          </div>
-        ))}
+        {P.map((p, k) =>
+          isMobile ? (
+            /* Mobile: details always visible, no hover needed */
+            <div
+              key={p[0]}
+              style={{ display: 'block', padding: '24px 0', borderBottom: '1px solid rgba(255,255,255,.35)' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, opacity: 0.9 }}>0{k + 1}</span>
+                <h3 style={{ margin: 0, fontSize: 'clamp(24px, 7vw, 34px)', lineHeight: 1.05 }}>{p[0]}</h3>
+              </div>
+
+              <p style={{
+                display: 'block', position: 'static', opacity: 1, visibility: 'visible',
+                transform: 'none', height: 'auto', maxHeight: 'none', width: 'auto',
+                margin: '14px 0 0', fontSize: 15, lineHeight: 1.6,
+              }}>
+                {p[1]}
+              </p>
+
+              <div style={{ marginTop: 12, fontSize: 12, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase', opacity: 0.85 }}>
+                {p[2]}
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
+                <a
+                  href={p[4]} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 999, border: '1px solid currentColor', color: 'inherit', textDecoration: 'none', fontSize: 13, fontWeight: 600 }}
+                >
+                  <FaGithub /> GitHub
+                </a>
+                <a
+                  href={p[3]} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 999, border: '1px solid currentColor', color: 'inherit', textDecoration: 'none', fontSize: 15, fontWeight: 600 }}
+                >
+                  Live ↗
+                </a>
+              </div>
+            </div>
+          ) : (
+            /* Desktop: your original hover layout */
+            <div className="pr" key={p[0]}>
+              <span className="n up">0{k + 1}</span><h3>{p[0]}</h3>
+              <p>
+                {p[1]}<small className="up">{p[2]}</small>
+                <small className="buttom" onClick={() => window.open(p[4], '_blank')}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><FaGithub />GitHub</span>
+                </small>
+              </p>
+              <span className="ar2" onClick={() => window.open(p[3], '_blank')}>↗</span>
+            </div>
+          )
+        )}
       </section>
 
       <section className="sec ct" id="contact">
