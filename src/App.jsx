@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import Model from './Models.jsx'
+import Scene from './Scene.jsx'
 import { FaGithub } from 'react-icons/fa';
 
-const G = [['Hello', 'en'], ['नमस्ते', 'hi'], ['ନମସ୍କାର', 'or'], ['Hola', 'es'], ['Bonjour', 'fr'], ['こんにちは', 'ja'], ['Hallo', 'de'], ['你好', 'zh'], ['I’m Rahul.', 'en']]
 const MAIL = 'kanhapatra801@gmail.com'
 const CP = 'https://www.corepilot.online'
 const RESUME = 'https://drive.google.com/drive/folders/1EfpC1bOlBL5d2rXmCh8hB-qEjJVIv2a2' // put your resume.pdf inside the /public folder
@@ -65,55 +64,100 @@ function useMedia(query) {
   return m
 }
 
-function Cursor() {
-  const dotR = useRef(), ringR = useRef()
+/* intro: code symbols spiral in, assemble into RAHUL, then shatter to reveal the site */
+const GLY = ['{', '}', '<', '>', '/', ';', '=', '(', ')', '[', ']', '0', '1', '#', '$', '&', '*', '+']
+const PAL = ['#ff5a1f', '#ff5a1f', '#ff8a4c', '#ffb48a', '#ffe0cc', '#ffffff']
+function Intro({ out, onBurst }) {
+  const ref = useRef(), outR = useRef(out)
+  useEffect(() => { outR.current = out }, [out])
   useEffect(() => {
-    if (matchMedia('(hover:none),(pointer:coarse)').matches) return
-    const ring = ringR.current, dot = dotR.current
-    const gh = document.querySelector('.ghost'), me = document.querySelector('.me')
-    let x = 0, y = 0, rx = 0, ry = 0, lt = 0, raf
-    const mv = (e) => {
-      x = e.clientX; y = e.clientY
-      dot.style.transform = `translate(${x}px,${y}px)`
-      const px = x / innerWidth - 0.5, py = y / innerHeight - 0.5
-      if (gh) gh.style.transform = `translateX(calc(-50% + ${px * -40}px)) translateY(${py * -20}px)`
-      if (me) me.style.transform = `translateX(calc(-50% + ${px * 18}px))`
-      const n = performance.now()
-      if (n - lt > 50) {
-        lt = n
-        const s = document.createElement('i')
-        s.className = 'spark'; s.style.left = x + 'px'; s.style.top = y + 'px'
-        s.style.setProperty('--dx', (Math.random() - 0.5) * 36 + 'px'); s.style.setProperty('--dy', (Math.random() - 0.5) * 36 + 'px')
-        document.body.appendChild(s); setTimeout(() => s.remove(), 700)
+    const cv = ref.current, ctx = cv.getContext('2d')
+    const dpr = Math.min(devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight
+    cv.width = W * dpr; cv.height = H * dpr; ctx.scale(dpr, dpr)
+    let raf, alive = true, P = [], t0 = 0, ts = 0, burst = false
+    const cx = W / 2, cy = H / 2
+    const build = () => {
+      const off = document.createElement('canvas'); off.width = W; off.height = H
+      const o = off.getContext('2d'), F = (s) => `900 ${s}px Archivo, system-ui, sans-serif`
+      o.font = F(100)
+      let fs = Math.min(100 * (W * 0.84) / o.measureText('RAHUL').width, H * 0.34)
+      o.font = F(fs); o.textAlign = 'center'; o.textBaseline = 'middle'; o.fillStyle = '#fff'
+      o.fillText('RAHUL', cx, cy * 0.92)
+      const step = Math.max(5, Math.round(fs / 26)), d = o.getImageData(0, 0, W, H).data
+      for (let y = 0; y < H; y += step) for (let x = 0; x < W; x += step) {
+        if (d[(y * W + x) * 4 + 3] > 140) {
+          const a = Math.random() * 6.283, r = Math.max(W, H) * (0.75 + Math.random() * 0.6)
+          const dist = Math.hypot(x - cx, y - cy) + 1
+          P.push({ tx: x, ty: y, sx: cx + Math.cos(a) * r, sy: cy + Math.sin(a) * r, dl: Math.random() * 0.5,
+            g: GLY[(Math.random() * GLY.length) | 0], c: PAL[(Math.random() * PAL.length) | 0],
+            vx: (x - cx) / dist * (260 + Math.random() * 760) + (Math.random() - 0.5) * 220,
+            vy: (y - cy) / dist * (260 + Math.random() * 760) + (Math.random() - 0.5) * 220, rs: (Math.random() - 0.5) * 14, sp: Math.random() * 6 })
+        }
       }
+      return { gs: Math.max(8, step * 1.3), sub: Math.max(11, Math.min(20, fs / 9)), subY: cy * 0.92 + fs * 0.62 }
     }
-    const ov = (e) => ring.classList.toggle('hot', !!e.target.closest('a,button,.pr,.sk div'))
-    const loop = () => { rx += (x - rx) * 0.16; ry += (y - ry) * 0.16; ring.style.transform = `translate(${rx}px,${ry}px)`; raf = requestAnimationFrame(loop) }
-    addEventListener('mousemove', mv); addEventListener('mouseover', ov); loop()
-    return () => { removeEventListener('mousemove', mv); removeEventListener('mouseover', ov); cancelAnimationFrame(raf) }
+    const start = (m) => {
+      t0 = performance.now()
+      const frame = (now) => {
+        if (!alive) return
+        const t = (now - t0) / 1000
+        if (outR.current && !ts) ts = now
+        const u = ts ? (now - ts) / 1000 : 0
+        if (ts) ctx.clearRect(0, 0, W, H); else { ctx.fillStyle = 'rgba(23,7,5,.3)'; ctx.fillRect(0, 0, W, H) }
+        ctx.globalCompositeOperation = 'lighter'
+        ctx.font = `700 ${m.gs}px ui-monospace, Consolas, monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        for (const p of P) {
+          let x, y, al = 1, rot = 0
+          if (ts) {
+            x = p.tx + p.vx * u; y = p.ty + p.vy * u + 420 * u * u; al = Math.max(0, 1 - u / 0.8); rot = p.rs * u
+          } else {
+            const k = Math.min(1, Math.max(0, (t - p.dl) / 1.1)), e = 1 - Math.pow(1 - k, 4), s = 1 - e
+            const rx = p.tx + (p.sx - p.tx) * s - cx, ry = p.ty + (p.sy - p.ty) * s - cy, an = s * 1.7
+            x = cx + rx * Math.cos(an) - ry * Math.sin(an); y = cy + rx * Math.sin(an) + ry * Math.cos(an)
+            al = Math.min(1, k * 3) * (k >= 1 ? 0.8 + 0.2 * Math.sin(t * 7 + p.sp) : 1); rot = s * 6
+          }
+          ctx.globalAlpha = al; ctx.fillStyle = p.c
+          if (rot) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillText(p.g, 0, 0); ctx.restore() } else ctx.fillText(p.g, x, y)
+        }
+        const sa = ts ? Math.max(0, 1 - u / 0.5) : Math.min(1, Math.max(0, (t - 1.35) / 0.5))
+        if (sa > 0) {
+          ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = sa * 0.9; ctx.fillStyle = '#ffb48a'
+          ctx.font = `600 ${m.sub}px Archivo, system-ui, sans-serif`
+          if ('letterSpacing' in ctx) ctx.letterSpacing = '0.4em'
+          ctx.fillText('SOFTWARE ENGINEER', cx, m.subY); if ('letterSpacing' in ctx) ctx.letterSpacing = '0px'
+        }
+        ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'
+        if (!ts && !burst && t > 2) { burst = true; onBurst() }
+        if (ts && u > 1) return
+        raf = requestAnimationFrame(frame)
+      }
+      raf = requestAnimationFrame(frame)
+    }
+    Promise.race([document.fonts.load('900 100px Archivo'), new Promise((r) => setTimeout(r, 500))]).then(() => alive && start(build()))
+    return () => { alive = false; cancelAnimationFrame(raf) }
   }, [])
-  return (<><div className="ring" ref={ringR} /><div className="dot" ref={dotR} /></>)
+  return <canvas ref={ref} />
 }
 
+
 export default function App() {
-  const [i, setI] = useState(0), [x, setX] = useState(false), [off, setOff] = useState(false), [gone, setGone] = useState(false), [menu, setMenu] = useState(false)
+  const [out, setOut] = useState(false), [gone, setGone] = useState(false), [menu, setMenu] = useState(false)
   const isMobile = useMedia('(max-width: 820px)')
 
-  const finish = () => {
-    setOff(true)
-    setTimeout(() => document.body.classList.add('ready'), 350)
-    setTimeout(() => setGone(true), 1500)
+  // symbols assemble into RAHUL (~2s), then shatter to reveal the hero
+  const done = useRef(false)
+  const reveal = () => {
+    if (done.current) return
+    done.current = true
+    setOut(true)
+    setTimeout(() => document.body.classList.add('ready'), 200)
+    setTimeout(() => setGone(true), 1100)
   }
   useEffect(() => {
-    if (off) return
-    const last = i === G.length - 1
-    const t = setTimeout(() => {
-      if (last) return finish()
-      setX(true)
-      setTimeout(() => { setI((v) => v + 1); setX(false) }, 300)
-    }, last ? 1400 : 700)
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
+    const t = setTimeout(reveal, reduce ? 0 : 4000) // safety net; the canvas normally triggers it at ~2s
     return () => clearTimeout(t)
-  }, [i, off])
+  }, [])
   useEffect(() => {
     document.body.style.overflow = menu ? 'hidden' : ''
     const esc = (e) => e.key === 'Escape' && setMenu(false)
@@ -127,12 +171,12 @@ export default function App() {
   return (
     <>
       {!gone && (
-        <div className={`greet ${off ? 'off' : ''}`}>
-          <h1 className={`gw ${x ? 'x' : ''}`} lang={G[i][1]}>{G[i][0]}</h1>
-          <button className="skip up" onClick={finish}>Skip intro</button>
+        <div className={`greet ${out ? 'out' : ''}`}>
+          <Intro out={out} onBurst={reveal} />
+          <button className="skip up" onClick={reveal}>Skip</button>
         </div>
       )}
-      <Cursor />
+      <Scene />
 
       <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <b>Rahul®</b>
@@ -172,37 +216,10 @@ export default function App() {
         <a href={RESUME} target="_blank" rel="noopener noreferrer" download="Rahul_Patra_Resume.pdf">Resume ↓</a>
       </div>
 
-      <header className="hero" id="top">
-        <svg className="lines" viewBox="0 0 1440 800" preserveAspectRatio="none">
-          <defs><linearGradient id="lg" x1="0" x2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#ffd2a8" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient></defs>
-          <path d="M-50 330 C300 280 520 120 1000 -20" /><path d="M-50 380 C320 340 600 180 1100 -40" style={{ animationDelay: '-2s' }} />
-          <path d="M500 880 C900 700 1200 600 1500 380" style={{ animationDelay: '-4s' }} /><path d="M700 880 C1000 760 1300 700 1500 520" />
-        </svg>
-        <div className="grid" />
-        <div className="ghost">RAHUL</div>
-
-        {/* Image wrapper: keeps proportions on small screens */}
-        <div
-          className="me"
-          style={isMobile ? { width: 'min(78vw, 360px)', height: 'auto', maxHeight: '68vh' } : undefined}
-        >
-          <img
-            src="/photo.png"
-            alt="Rahul Patra"
-            style={{
-              display: 'block',
-              width: '100%',
-              height: isMobile ? 'auto' : '100%',
-              maxHeight: isMobile ? '68vh' : undefined,
-              objectFit: 'contain',
-              objectPosition: 'center bottom',
-            }}
-          />
-        </div>
+      <header className="hero sec" id="top">
 
         <p className="intro up">I build full-stack products and AI-integrated software that are fast, secure and impactful</p>
         <a className="thumb" href={CP} target="_blank" rel="noopener noreferrer" aria-label="Visit CorePilot">
-          <div className="tc"><Model kind="crystal" /></div>
           <p className="up"><span>CorePilot</span><span>AI Dev Tools ↗</span></p>
         </a>
         <div className="big up"><small>©2026</small><h1>Rahul</h1></div>
@@ -210,7 +227,6 @@ export default function App() {
       </header>
 
       <section className="sec" id="about">
-        <div className="m3d"><Model kind="knot" /></div>
         <p className="lab up">(01) About</p><h2>Code, <em>craft</em> &amp; AI</h2>
         <div className="about">
           <div>
@@ -240,7 +256,7 @@ export default function App() {
         <section className="sec or" id="projects">
         <p className="lab up">(04) Projects</p><h2>Selected <em>work</em></h2>
         {P.map((p, k) =>
-          isMobile ? (
+          true /* details always visible inside the scene panel */ ? (
             /* Mobile: details always visible, no hover needed */
             <div
               key={p[0]}
