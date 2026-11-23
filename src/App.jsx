@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import Model from './Models.jsx'
+import { FaGithub } from 'react-icons/fa';
 
 const G = [['Hello', 'en'], ['नमस्ते', 'hi'], ['ନମସ୍କାର', 'or'], ['Hola', 'es'], ['Bonjour', 'fr'], ['こんにちは', 'ja'], ['Hallo', 'de'], ['你好', 'zh'], ['I’m Rahul.', 'en']]
 const MAIL = 'kanhapatra801@gmail.com'
 const CP = 'https://www.corepilot.online'
+const RESUME = 'https://drive.google.com/drive/folders/1EfpC1bOlBL5d2rXmCh8hB-qEjJVIv2a2' // put your resume.pdf inside the /public folder
 const Ext = ({ href, children }) => <a className="vl" href={href} target="_blank" rel="noopener noreferrer">{children}</a>
 const SK = {
   Languages: 'Python, JavaScript, TypeScript, Java, C++, SQL',
@@ -14,26 +16,54 @@ const SK = {
   DevOps: 'AWS, GCP, Docker, Kubernetes, GitHub Actions, Kafka, Redis',
 }
 const J = [
-  { when: 'Jan 2026 – Present', t: <Ext href={CP}>CorePilot ↗</Ext>, role: 'Founder & Software Engineer · Remote', pts: [
-    'Architecting a full-stack SaaS developer-tooling platform with LLM orchestration and RAG.',
-    'Sole engineer across APIs, MongoDB schemas, authentication, tenant isolation and data security.',
-    <>Visit <Ext href={CP}>corepilot.online ↗</Ext> (in active development).</>] },
-  { when: 'Jan – Aug 2026', t: 'Smartnex Technologies', role: 'Software Engineer Intern · Bhubaneswar', pts: [
-    'Built features for RayEngineering HRMS, a production SaaS HR system.',
-    <>Built the full backend and admin panel for SiteLink, a construction hiring platform with Razorpay payments. <span className="badge live">● Live on Google Play Store</span></>,
-    'REST APIs with Node, Express, JWT and RBAC; reusable React components cut UI redundancy by 25%.',
-    'Tuned MongoDB queries and shipped through GitHub Actions CI/CD.'] },
-  { when: '2026', t: <>DocSpot <span className="badge soon">Coming soon on Play Store</span></>, role: 'Android App & Admin Panel · Independent Project', pts: [
-    'Flutter Android app with Firebase authentication, cloud data, notifications and real-time sync through Cloud Firestore.',
-    'React and Node.js admin panel to manage content, users, configurations and platform operations securely.'] },
+  {
+    when: 'Jan 2026 – Present', t: <Ext href={CP}>CorePilot ↗</Ext>, role: 'Founder & Software Engineer · Remote', pts: [
+      'Architecting a full-stack SaaS developer-tooling platform with LLM orchestration and RAG.',
+      'Sole engineer across APIs, MongoDB schemas, authentication, tenant isolation and data security.',
+      <>Visit <Ext href={CP}>corepilot.online ↗</Ext> (in active development).</>]
+  },
+  {
+    when: 'Jan – Aug 2026', t: 'Smartnex Technologies', role: 'Software Engineer Intern · Bhubaneswar', pts: [
+      'Built features for RayEngineering HRMS, a production SaaS HR system.',
+      <>Built the full backend and admin panel for SiteLink, a construction hiring platform with Razorpay payments. <span className="badge live">● Live on Google Play Store</span></>,
+      'REST APIs with Node, Express, JWT and RBAC; reusable React components cut UI redundancy by 25%.',
+      'Tuned MongoDB queries and shipped through GitHub Actions CI/CD.']
+  },
+  {
+    when: '2026', t: <>DocSpot <span className="badge soon">Coming soon on Play Store</span></>, role: 'Android App & Admin Panel · Independent Project', pts: [
+      'Flutter Android app with Firebase authentication, cloud data, notifications and real-time sync through Cloud Firestore.',
+      'React and Node.js admin panel to manage content, users, configurations and platform operations securely.']
+  },
 ]
 const P = [
-  ['CodeLens', 'AI-powered code review. Gemini API, custom prompts, severity-ranked fixes. About 40% less manual review work.', 'React · Node · Gemini'],
-  ['Connectra', 'Real-time chat with WebSockets, presence tracking and JWT-secured REST APIs.', 'React · Node · MongoDB'],
-  ['DocSpot', 'Flutter Android app with Firebase and a React admin panel synced through Firestore. Coming soon on Play Store.', 'Flutter · React · Firebase'],
-  ['Leave Management', 'Leave requests and approvals with bcrypt, protected routes and RBAC.', 'React · Express · MongoDB'],
+  ['DocSpot', 'Flutter Android app with Firebase and a React admin panel synced through Firestore. Coming soon on Play Store.', 'Flutter · React · Firebase', 'https://www.docspot.si', 'https://github.com/patraRahul5678/DOCSPOT-LANDING-PAGE'],
+  ['Connectra', 'Real-time chat with WebSockets, presence tracking and JWT-secured REST APIs.', 'React · Node · MongoDB', 'https://connectra-vljd.onrender.com', 'https://github.com/patraRahul5678/Connectra'],
+  ['CodeLens', 'AI-powered code review. Gemini API, custom prompts, severity-ranked fixes. About 40% less manual review work.', 'React · Node · Gemini', 'https://codelens-1-e0t1.onrender.com/', 'https://github.com/patraRahul5678/CodeLens'],
+  ['Leave Management', 'Leave requests and approvals with bcrypt, protected routes and RBAC.', 'React · Express · MongoDB', 'https://leave-management-sysytem-6.onrender.com/', 'https://github.com/patraRahul5678/LEAVE-MANAGEMENT-SYSYTEM'],
+  ['CarZone', 'An Uber-inspired full-stack car rental marketplace built with modern web technologies.', 'React · Express · MongoDB', 'https://carzone-1-e0t1.onrender.com/', 'https://github.com/patraRahul5678/CarZone'],
 ]
 const NAV = [['top', 'Home'], ['about', 'About'], ['skills', 'Skills'], ['work', 'Experience'], ['projects', 'Projects'], ['contact', 'Contact']]
+
+/* Inline-style helpers */
+const resumeBtn = {
+  display: 'inline-flex', alignItems: 'center', gap: 6,
+  padding: '8px 16px', borderRadius: 999,
+  border: '1px solid currentColor', color: 'inherit',
+  fontSize: 13, fontWeight: 600, letterSpacing: '.04em',
+  textDecoration: 'none', whiteSpace: 'nowrap', cursor: 'pointer',
+}
+
+function useMedia(query) {
+  const [m, setM] = useState(() => typeof matchMedia !== 'undefined' && matchMedia(query).matches)
+  useEffect(() => {
+    const mq = matchMedia(query)
+    const h = (e) => setM(e.matches)
+    setM(mq.matches)
+    mq.addEventListener('change', h)
+    return () => mq.removeEventListener('change', h)
+  }, [query])
+  return m
+}
 
 function Cursor() {
   const dotR = useRef(), ringR = useRef()
@@ -46,8 +76,8 @@ function Cursor() {
       x = e.clientX; y = e.clientY
       dot.style.transform = `translate(${x}px,${y}px)`
       const px = x / innerWidth - 0.5, py = y / innerHeight - 0.5
-      gh.style.transform = `translateX(calc(-50% + ${px * -40}px)) translateY(${py * -20}px)`
-      me.style.transform = `translateX(calc(-50% + ${px * 18}px))`
+      if (gh) gh.style.transform = `translateX(calc(-50% + ${px * -40}px)) translateY(${py * -20}px)`
+      if (me) me.style.transform = `translateX(calc(-50% + ${px * 18}px))`
       const n = performance.now()
       if (n - lt > 50) {
         lt = n
@@ -67,6 +97,8 @@ function Cursor() {
 
 export default function App() {
   const [i, setI] = useState(0), [x, setX] = useState(false), [off, setOff] = useState(false), [gone, setGone] = useState(false), [menu, setMenu] = useState(false)
+  const isMobile = useMedia('(max-width: 820px)')
+
   const finish = () => {
     setOff(true)
     setTimeout(() => document.body.classList.add('ready'), 350)
@@ -87,6 +119,9 @@ export default function App() {
     const esc = (e) => e.key === 'Escape' && setMenu(false)
     addEventListener('keydown', esc); return () => removeEventListener('keydown', esc)
   }, [menu])
+  // close the mobile menu if the screen grows to desktop
+  useEffect(() => { if (!isMobile) setMenu(false) }, [isMobile])
+
   const words = Object.values(SK).join(', ').split(', ').slice(0, 18).join(' ✦ ') + ' ✦ '
 
   return (
@@ -98,13 +133,43 @@ export default function App() {
         </div>
       )}
       <Cursor />
-      <nav>
+
+      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <b>Rahul®</b>
-        <div className="up">{NAV.map(([id, n]) => <a key={id} href={`#${id}`}>{n}</a>)}</div>
-        <button className="bars" aria-label="Menu" onClick={() => setMenu(!menu)} />
+
+        {/* Desktop links: always visible on large screens */}
+        <div
+          className="up"
+          style={isMobile
+            ? { display: 'none' }
+            : { display: 'flex', alignItems: 'center', gap: 24, position: 'static', opacity: 1, visibility: 'visible', transform: 'none' }}
+        >
+          {NAV.map(([id, n]) => <a key={id} href={`#${id}`}>{n}</a>)}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {/* Resume button at the top */}
+          <a href={RESUME} target="_blank" rel="noopener noreferrer" download="Rahul_Patra_Resume.pdf" style={resumeBtn}>
+            Resume ↓
+          </a>
+          {/* Hamburger only on mobile */}
+          <button
+            className="bars"
+            aria-label="Menu"
+            onClick={() => setMenu(!menu)}
+            style={isMobile ? { display: 'block' } : { display: 'none' }}
+          />
+        </div>
       </nav>
-      <div className={`menu up ${menu ? 'open' : ''}`} onClick={(e) => e.target.closest('a') && setMenu(false)}>
+
+      {/* Mobile menu overlay */}
+      <div
+        className={`menu up ${menu ? 'open' : ''}`}
+        style={isMobile ? undefined : { display: 'none' }}
+        onClick={(e) => e.target.closest('a') && setMenu(false)}
+      >
         {NAV.map(([id, n]) => <a key={id} href={`#${id}`}>{n}</a>)}
+        <a href={RESUME} target="_blank" rel="noopener noreferrer" download="Rahul_Patra_Resume.pdf">Resume ↓</a>
       </div>
 
       <header className="hero" id="top">
@@ -115,7 +180,26 @@ export default function App() {
         </svg>
         <div className="grid" />
         <div className="ghost">RAHUL</div>
-        <div className="me"><img src="/photo.png" alt="Rahul Patra" /></div>
+
+        {/* Image wrapper: keeps proportions on small screens */}
+        <div
+          className="me"
+          style={isMobile ? { width: 'min(78vw, 360px)', height: 'auto', maxHeight: '68vh' } : undefined}
+        >
+          <img
+            src="/photo.png"
+            alt="Rahul Patra"
+            style={{
+              display: 'block',
+              width: '100%',
+              height: isMobile ? 'auto' : '100%',
+              maxHeight: isMobile ? '68vh' : undefined,
+              objectFit: 'contain',
+              objectPosition: 'center bottom',
+            }}
+          />
+        </div>
+
         <p className="intro up">I build full-stack products and AI-integrated software that are fast, secure and impactful</p>
         <a className="thumb" href={CP} target="_blank" rel="noopener noreferrer" aria-label="Visit CorePilot">
           <div className="tc"><Model kind="crystal" /></div>
@@ -156,7 +240,8 @@ export default function App() {
       <section className="sec or" id="projects">
         <p className="lab up">(04) Projects</p><h2>Selected <em>work</em></h2>
         {P.map((p, k) => (
-          <div className="pr" key={p[0]}><span className="n up">0{k + 1}</span><h3>{p[0]}</h3><p>{p[1]}<small className="up">{p[2]}</small></p><span className="ar2">↗</span></div>
+          <div className="pr" key={p[0]}><span className="n up">0{k + 1}</span><h3>{p[0]}</h3><p>{p[1]}<small className="up">{p[2]}</small><small className="buttom" onClick={() => window.open(p[4], '_blank')}><span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{<FaGithub />}GitHub</span></small></p><span className="ar2" onClick={() => window.open(p[3], '_blank')}>↗</span>
+          </div>
         ))}
       </section>
 
